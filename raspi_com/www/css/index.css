@@ -32,23 +32,15 @@ body {
 }
 
 .app {
-    background: url(../images/cordova.png) no-repeat center top; 
-    position: absolute;             
+    /*background: url(../images/cordova.png) no-repeat center top; */
+    position: absolute;
     left: 50%;
     top: 50%;
-    height: 50px;                  
-    width: 225px;                   
+    height:250px;
+    width: 250px;
     text-align: center;
-    padding: 180px 0px 0px 0px;     
-    margin: -115px 0px 0px -112px;
-}
-
-@media screen and (min-aspect-ratio: 1/1) and (min-width:400px) {
-    .app {
-        background-position:left center;
-        padding:75px 0px 75px 170px;
-        margin:-90px 0px 0px -198px;
-    }
+    padding: 0px 0px 0px 0px;
+    margin: -125px -125px;
 }
 
 h1 {
@@ -59,6 +51,33 @@ h1 {
     padding:0px;
     text-align:center;
 }
+
+.time {
+    background-color:#0d6d36;
+    border-radius:4px;
+    -webkit-border-radius:4px;
+    color:#FFFFFF;
+    font-size:12px;
+    margin:5px 25px;
+    padding:5px 5px;
+    display:block;
+}
+
+.time.now {
+    background-color:#00f768;
+    display:block;
+    color:#000;
+    font-weight: bold;
+}
+
+.time.stop {
+    background-color:#857314;
+    display:block;
+    /*color:#000;
+    font-weight: bold;*/
+}
+
+
 
 .event {
     border-radius:4px;
