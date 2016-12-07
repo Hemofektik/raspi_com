@@ -1,3 +1,4 @@
 bin
 .vs
 /raspi_com/bld
+node_modules

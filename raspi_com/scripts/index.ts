@@ -1,8 +1,4 @@
-﻿// Eine Einführung zur leeren Vorlage finden Sie in der folgenden Dokumentation:
-// http://go.microsoft.com/fwlink/?LinkID=397705
-// So debuggen Sie Code beim Seitenladen in Ripple oder auf Android-Geräten/-Emulatoren: Starten Sie die App, legen Sie Haltepunkte fest, 
-// und führen Sie dann "window.location.reload()" in der JavaScript-Konsole aus.
-module raspicom {
+﻿module raspicom {
     "use strict";
 
     export module Application {
@@ -12,6 +8,14 @@ module raspicom {
 
         let last_time = 0;
 
+        function raspi_response(data: any, textStatus: string, jqXHR: JQueryXHR) {
+            var parentElement = document.getElementById('deviceready');
+            var listeningElement = parentElement.querySelector('.listening');
+            var receivedElement = parentElement.querySelector('.received');
+            listeningElement.setAttribute('style', 'display:none;');
+            receivedElement.setAttribute('style', 'display:none;');  
+        }
+
         export function setTime(time) {
             if (time > 0) {
                 last_time = new Date().getTime() + time * 60 * 1000;
@@ -19,6 +23,23 @@ module raspicom {
 
             // TODO: send time and text to raspi
             // TODO: if time == 0 then send audio alert as well
+
+            //$.post("http://raspi.local:8888", "{ \"text\": \"Na123!!\", \"duration\": 120.0 }", raspi_response, "json");
+            
+            var client = new XMLHttpRequest();
+
+            client.open("POST", "http://raspi.local:8888", true);
+            client.setRequestHeader("Connection", "close");
+            client.setRequestHeader("Content-Type", "application/json");
+            client.setRequestHeader("Origin", "raspi_com");
+
+            client.onreadystatechange = function () {
+                if (client.readyState == 4) {
+                    alert(client.responseText);
+                }
+            };
+
+            client.send(JSON.stringify({ text: "Na123!!", duration: 12.0 }));
         }
 
         export function stop() {

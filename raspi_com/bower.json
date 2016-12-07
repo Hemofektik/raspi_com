@@ -1,5 +1,4 @@
 {
-    "name": "raspi_com",
-    "dependencies": {
-    }
+  "name": "raspi_com",
+  "dependencies": {}
 }

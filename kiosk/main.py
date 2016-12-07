@@ -160,6 +160,8 @@ app.template = ("index.html", {"username": "htmlPy_user"})
 
 app.bind(pyGUI())
 
+def CORS():
+    cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
 
 # Instructions for running application
 if __name__ == "__main__":
@@ -169,6 +171,7 @@ if __name__ == "__main__":
 
     QApplication.setOverrideCursor(QCursor(Qt.BlankCursor))
 
+    cherrypy.tools.CORS = cherrypy.Tool("before_finalize", CORS)
     cherrypy.tree.mount(RESTService(), '/')
 
     if sys.platform.startswith('linux'):
@@ -176,7 +179,7 @@ if __name__ == "__main__":
                                 'server.socket_port': 8888})
     else:
         cherrypy.config.update({'server.socket_port': 8888})
-        
+
     cherrypy.engine.start()
 
     # The driver file will have to be imported everywhere in back-end.
