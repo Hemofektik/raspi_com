@@ -8,12 +8,50 @@
 
         let last_time = 0;
 
-        function raspi_response(data: any, textStatus: string, jqXHR: JQueryXHR) {
-            var parentElement = document.getElementById('deviceready');
-            var listeningElement = parentElement.querySelector('.listening');
-            var receivedElement = parentElement.querySelector('.received');
-            listeningElement.setAttribute('style', 'display:none;');
-            receivedElement.setAttribute('style', 'display:none;');  
+        function showError() {
+
+            last_time = 0;
+
+            // TODO: implement
+
+            //var parentElement = document.getElementById('deviceready');
+            //var listeningElement = parentElement.querySelector('.listening');
+            //receivedElement.setAttribute('style', 'display:none;');
+        }
+
+        function sendMessage(message) {
+            var client = new XMLHttpRequest();
+
+            //client.open("POST", "http://raspi.local:8888", true);
+            client.open("POST", "http://localhost:8888", true);
+            client.setRequestHeader("Connection", "close");
+            client.setRequestHeader("Content-Type", "application/json");
+            client.setRequestHeader("Origin", "raspi_com");
+
+            client.onreadystatechange = function () {
+                if (client.readyState === client.DONE) {
+                    if (client.status === 200) {
+                        try {
+                            var json = JSON.parse(client.responseText);
+
+                            if (json["status"] === undefined) {
+                                // TODO: show status
+                                showError();
+                                return;
+                            }
+
+                            // TODO: show status ok
+                        } catch (exc) {
+                            showError();
+                        }
+
+                    } else {
+                        showError();
+                    }
+                }
+            };
+
+            client.send(JSON.stringify(message));
         }
 
         export function setTime(time) {
@@ -22,24 +60,11 @@
             }
 
             // TODO: send time and text to raspi
+            var text = "start";
+            var duration = (last_time - new Date().getTime()) / 1000;
+
             // TODO: if time == 0 then send audio alert as well
-
-            //$.post("http://raspi.local:8888", "{ \"text\": \"Na123!!\", \"duration\": 120.0 }", raspi_response, "json");
-            
-            var client = new XMLHttpRequest();
-
-            client.open("POST", "http://raspi.local:8888", true);
-            client.setRequestHeader("Connection", "close");
-            client.setRequestHeader("Content-Type", "application/json");
-            client.setRequestHeader("Origin", "raspi_com");
-
-            client.onreadystatechange = function () {
-                if (client.readyState == 4) {
-                    alert(client.responseText);
-                }
-            };
-
-            client.send(JSON.stringify({ text: "Na123!!", duration: 12.0 }));
+            sendMessage({ text: text, duration: duration });
         }
 
         export function stop() {
@@ -72,8 +97,15 @@
 
             if (last_time == 0) {
                 timeElement.innerText = "-";
+                timeElement.classList.add("paused");
+                timeElement.classList.remove("now");
             } else {
                 var delta = (last_time - new Date().getTime());
+                if (delta < 0) {
+                    last_time = 0;
+                    return;
+                }
+
                 var min = delta / 60000;
                 var m = Math.floor(min);
                 var s = ((min - m) * 60).toFixed(0);
@@ -81,6 +113,8 @@
 
                 var target_date = new Date(last_time);
                 timeElement.innerText += " (" + target_date.getHours() + ":" + target_date.getMinutes() + ")";
+                timeElement.classList.add("now");
+                timeElement.classList.remove("paused");
             }
         }
 

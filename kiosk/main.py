@@ -138,6 +138,15 @@ class RESTService(object):
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def index(self):
+
+        cherrypy.response.headers["Access-Control-Max-Age"] = "1728000"
+        cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
+
+        if cherrypy.request.method == "OPTIONS":
+            cherrypy.response.headers["Access-Control-Allow-Methods"] = "POST"
+            cherrypy.response.headers["Access-Control-Allow-Headers"] = "accept, content-type"
+            return "OK"
+
         data = cherrypy.request.json
         if "text" in data and "duration" in data:
             qtGuiHandler.set_text(data["text"], data["duration"])
@@ -145,7 +154,7 @@ class RESTService(object):
         if "hide" in data:
             qtGuiHandler.hide()
 
-        return {'key': data }
+        return {"status": "ok"}
 
 app = htmlPy.AppGUI(title=u"raspi_msg", maximized=False)
 app.developer_mode = True
@@ -160,9 +169,6 @@ app.template = ("index.html", {"username": "htmlPy_user"})
 
 app.bind(pyGUI())
 
-def CORS():
-    cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
-
 # Instructions for running application
 if __name__ == "__main__":
     
@@ -171,7 +177,6 @@ if __name__ == "__main__":
 
     QApplication.setOverrideCursor(QCursor(Qt.BlankCursor))
 
-    cherrypy.tools.CORS = cherrypy.Tool("before_finalize", CORS)
     cherrypy.tree.mount(RESTService(), '/')
 
     if sys.platform.startswith('linux'):

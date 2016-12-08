@@ -69,6 +69,12 @@ h1 {
     color:#000;
     font-weight: bold;
 }
+.time.paused {
+    background-color:#E4E4E4;
+    display:block;
+    color:#000;
+    font-weight: bold;
+}
 
 .time.stop {
     background-color:#857314;
