@@ -103,6 +103,11 @@ h1 {
     background-color:#4B946A;
     display:none;
 }
+.event.error {
+    background-color:#7d0b0b;
+    color:white;
+    display:none;
+}
 
 @keyframes fade {
     from { opacity: 1.0; }

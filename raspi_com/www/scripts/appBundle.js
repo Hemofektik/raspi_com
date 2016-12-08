@@ -8,14 +8,22 @@ var raspicom;
         }
         Application.initialize = initialize;
         var last_time = 0;
+        function showStatus(isError) {
+            var parentElement = document.getElementById('status');
+            var errorElement = parentElement.querySelector('.error');
+            if (isError) {
+                errorElement.setAttribute('style', 'display:block;');
+            }
+            else {
+                errorElement.setAttribute('style', 'display:none;');
+            }
+        }
         function showError() {
             last_time = 0;
-            // TODO: implement
-            //var parentElement = document.getElementById('deviceready');
-            //var listeningElement = parentElement.querySelector('.listening');
-            //receivedElement.setAttribute('style', 'display:none;');
+            showStatus(true);
         }
         function sendMessage(message) {
+            showStatus(false);
             var client = new XMLHttpRequest();
             //client.open("POST", "http://raspi.local:8888", true);
             client.open("POST", "http://localhost:8888", true);
@@ -28,16 +36,17 @@ var raspicom;
                         try {
                             var json = JSON.parse(client.responseText);
                             if (json["status"] === undefined) {
-                                // TODO: show status
                                 showError();
                                 return;
                             }
                         }
                         catch (exc) {
+                            console.log(exc);
                             showError();
                         }
                     }
                     else {
+                        console.log("client.status: " + client.status);
                         showError();
                     }
                 }
@@ -64,14 +73,6 @@ var raspicom;
             // Verarbeiten der Cordova-Pause- und -Fortsetzenereignisse
             document.addEventListener('pause', onPause, false);
             document.addEventListener('resume', onResume, false);
-            // TODO: Cordova wurde geladen. Führen Sie hier eine Initialisierung aus, die Cordova erfordert.
-            var parentElement = document.getElementById('deviceready');
-            var listeningElement = parentElement.querySelector('.listening');
-            var receivedElement = parentElement.querySelector('.received');
-            listeningElement.setAttribute('style', 'display:none;');
-            receivedElement.setAttribute('style', 'display:block;');
-            //var timeElement = document.getElementById('time');
-            //timeElement.setAttribute('style', 'display:none;');
             window.setInterval(onTick, 1000);
         }
         function onTick() {
@@ -92,7 +93,9 @@ var raspicom;
                 var s = ((min - m) * 60).toFixed(0);
                 timeElement.innerText = m.toFixed(0) + ":" + (s.length < 2 ? "0" : "") + s;
                 var target_date = new Date(last_time);
-                timeElement.innerText += " (" + target_date.getHours() + ":" + target_date.getMinutes() + ")";
+                timeElement.innerText += " (" + target_date.getHours() + ":" +
+                    (target_date.getMinutes() < 10 ? "0" : "") +
+                    target_date.getMinutes() + ")";
                 timeElement.classList.add("now");
                 timeElement.classList.remove("paused");
             }
