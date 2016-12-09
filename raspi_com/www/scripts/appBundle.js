@@ -8,15 +8,24 @@ var raspicom;
         }
         Application.initialize = initialize;
         var last_time = 0;
-        function showStatus(isError) {
-            var parentElement = document.getElementById('status');
-            var errorElement = parentElement.querySelector('.error');
-            if (isError) {
-                errorElement.setAttribute('style', 'display:block;');
+        function showLoadingIndicator(show) {
+            var parentElement = document.getElementById('loading_indicator');
+            if (show) {
+                parentElement.classList.remove("hidden");
             }
             else {
-                errorElement.setAttribute('style', 'display:none;');
+                parentElement.classList.add("hidden");
             }
+        }
+        function showStatus(isError) {
+            var parentElement = document.getElementById('status');
+            if (isError) {
+                parentElement.classList.remove("hidden");
+            }
+            else {
+                parentElement.classList.add("hidden");
+            }
+            showLoadingIndicator(false);
         }
         function showError() {
             last_time = 0;
@@ -24,6 +33,7 @@ var raspicom;
         }
         function sendMessage(message) {
             showStatus(false);
+            showLoadingIndicator(true);
             var client = new XMLHttpRequest();
             //client.open("POST", "http://raspi.local:8888", true);
             client.open("POST", "http://localhost:8888", true);
@@ -39,6 +49,7 @@ var raspicom;
                                 showError();
                                 return;
                             }
+                            showLoadingIndicator(false);
                         }
                         catch (exc) {
                             console.log(exc);
@@ -57,16 +68,16 @@ var raspicom;
             if (time > 0) {
                 last_time = new Date().getTime() + time * 60 * 1000;
             }
-            // TODO: send time and text to raspi
+            // TODO: dynamic text to raspi
             var text = "start";
             var duration = (last_time - new Date().getTime()) / 1000;
-            // TODO: if time == 0 then send audio alert as well
-            sendMessage({ text: text, duration: duration });
+            var audible = (time == 0);
+            sendMessage({ text: text, duration: duration, audible: audible });
         }
         Application.setTime = setTime;
         function stop() {
             last_time = 0;
-            // TODO: send stop to raspi
+            sendMessage({ "hide": true });
         }
         Application.stop = stop;
         function onDeviceReady() {
@@ -95,13 +106,13 @@ var raspicom;
                 var target_date = new Date(last_time);
                 timeElement.innerText += " (" + target_date.getHours() + ":" +
                     (target_date.getMinutes() < 10 ? "0" : "") +
-                    target_date.getMinutes() + ")";
+                    target_date.getMinutes() + " Uhr)";
                 timeElement.classList.add("now");
                 timeElement.classList.remove("paused");
             }
         }
         function onPause() {
-            // TODO: Diese Anwendung wurde ausgesetzt. Speichern Sie hier den Anwendungszustand.
+            // Diese Anwendung wurde ausgesetzt. Speichern Sie hier den Anwendungszustand.
         }
         function onResume() {
         }

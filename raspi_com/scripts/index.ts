@@ -7,16 +7,27 @@
         }
 
         let last_time = 0;
+        
+        function showLoadingIndicator(show) {
+            var parentElement = document.getElementById('loading_indicator');
+
+            if (show) {
+                parentElement.classList.remove("hidden");
+            } else {
+                parentElement.classList.add("hidden");
+            }
+        }
 
         function showStatus(isError) {
             var parentElement = document.getElementById('status');
-            var errorElement = parentElement.querySelector('.error');
 
             if (isError) {
-                errorElement.setAttribute('style', 'display:block;');
+                parentElement.classList.remove("hidden");
             } else {
-                errorElement.setAttribute('style', 'display:none;');
+                parentElement.classList.add("hidden");
             }
+
+            showLoadingIndicator(false);
         }
 
         function showError() {
@@ -27,6 +38,7 @@
         function sendMessage(message) {
 
             showStatus(false);
+            showLoadingIndicator(true);
 
             var client = new XMLHttpRequest();
 
@@ -46,12 +58,14 @@
                                 showError();
                                 return;
                             }
+                            
+                            showLoadingIndicator(false);
 
                         } catch (exc) {
                             console.log(exc);
                             showError();
                         }
-
+                        
                     } else {
                         console.log("client.status: " + client.status);
                         showError();
@@ -72,14 +86,12 @@
             var duration = (last_time - new Date().getTime()) / 1000;
             var audible = (time == 0);
 
-            // TODO: if time == 0 then send audio alert as well
             sendMessage({ text: text, duration: duration, audible: audible });
         }
 
         export function stop() {
             last_time = 0;
-
-            // TODO: send stop to raspi
+            sendMessage({ "hide": true });
         }
         
 
@@ -113,14 +125,14 @@
                 var target_date = new Date(last_time);
                 timeElement.innerText += " (" + target_date.getHours() + ":" +
                     (target_date.getMinutes() < 10 ? "0" : "") +
-                    target_date.getMinutes() + ")";
+                    target_date.getMinutes() + " Uhr)";
                 timeElement.classList.add("now");
                 timeElement.classList.remove("paused");
             }
         }
 
         function onPause() {
-            // TODO: Diese Anwendung wurde ausgesetzt. Speichern Sie hier den Anwendungszustand.
+            // Diese Anwendung wurde ausgesetzt. Speichern Sie hier den Anwendungszustand.
         }
 
         function onResume() {

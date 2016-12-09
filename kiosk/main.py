@@ -103,12 +103,14 @@ class QTGuiHandler(CallbackEventHandler):
         self.timer_text = None
         self.timer_signal = None
 
-    def _set_text_gui_thread(self, text):
-        play_sound("mystic-flute.wav")
+    def _set_text_gui_thread(self, text, audible):
+        # TODO: enable screen back light
+        if audible:
+            play_sound("mystic-flute.wav")
         app.evaluate_javascript("(function () {document.set_text('" + text + "');})()")
 
-    def set_text(self, text, duration=5.0):
-        self.postEventWithCallback(self._set_text_gui_thread, text)
+    def set_text(self, text, duration=5.0, audible=False):
+        self.postEventWithCallback(self._set_text_gui_thread, text, audible)
         print("show '" + text + "' for "+ str(duration) + " seconds")
 
         if self.timer_text: 
@@ -123,6 +125,7 @@ class QTGuiHandler(CallbackEventHandler):
 
     def _hide_gui_thread(self):
         app.evaluate_javascript("(function () {document.hide();})()")
+        # TODO: disable screen back light 
 
     def hide(self):
         self.postEventWithCallback(self._hide_gui_thread)
@@ -148,8 +151,8 @@ class RESTService(object):
             return "OK"
 
         data = cherrypy.request.json
-        if "text" in data and "duration" in data:
-            qtGuiHandler.set_text(data["text"], data["duration"])
+        if "text" in data and "duration" in data and "audible" in data:
+            qtGuiHandler.set_text(data["text"], data["duration"], data["audible"])
 
         if "hide" in data:
             qtGuiHandler.hide()
