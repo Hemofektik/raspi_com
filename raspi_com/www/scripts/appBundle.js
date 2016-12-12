@@ -8,6 +8,7 @@ var raspicom;
         }
         Application.initialize = initialize;
         var last_time = 0;
+        var last_message_text = "";
         function showLoadingIndicator(show) {
             var parentElement = document.getElementById('loading_indicator');
             if (show) {
@@ -68,11 +69,10 @@ var raspicom;
             if (time > 0) {
                 last_time = new Date().getTime() + time * 60 * 1000;
             }
-            // TODO: dynamic text to raspi
-            var text = "start";
+            last_message_text = document.getElementById('msg_text').value;
             var duration = (last_time - new Date().getTime()) / 1000;
             var audible = (time == 0);
-            sendMessage({ text: text, duration: duration, audible: audible });
+            sendMessage({ text: last_message_text, duration: duration, audible: audible });
         }
         Application.setTime = setTime;
         function stop() {
@@ -84,6 +84,7 @@ var raspicom;
             // Verarbeiten der Cordova-Pause- und -Fortsetzenereignisse
             document.addEventListener('pause', onPause, false);
             document.addEventListener('resume', onResume, false);
+            onResume();
             window.setInterval(onTick, 1000);
         }
         function onTick() {
@@ -112,9 +113,16 @@ var raspicom;
             }
         }
         function onPause() {
-            // Diese Anwendung wurde ausgesetzt. Speichern Sie hier den Anwendungszustand.
+            if (last_message_text.length > 0) {
+                window.localStorage.setItem("last_message_text", last_message_text);
+            }
         }
         function onResume() {
+            var lst_msg_txt = window.localStorage.getItem("last_message_text");
+            if (lst_msg_txt != undefined && lst_msg_txt.length > 0) {
+                last_message_text = lst_msg_txt;
+                document.getElementById('msg_text').value = lst_msg_txt;
+            }
         }
     })(Application = raspicom.Application || (raspicom.Application = {}));
     window.onload = function () {

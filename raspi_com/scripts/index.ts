@@ -7,6 +7,7 @@
         }
 
         let last_time = 0;
+        let last_message_text = "";
         
         function showLoadingIndicator(show) {
             var parentElement = document.getElementById('loading_indicator');
@@ -81,12 +82,11 @@
                 last_time = new Date().getTime() + time * 60 * 1000;
             }
 
-            // TODO: dynamic text to raspi
-            var text = "start";
+            last_message_text = (document.getElementById('msg_text') as HTMLInputElement).value;
             var duration = (last_time - new Date().getTime()) / 1000;
             var audible = (time == 0);
 
-            sendMessage({ text: text, duration: duration, audible: audible });
+            sendMessage({ text: last_message_text, duration: duration, audible: audible });
         }
 
         export function stop() {
@@ -99,6 +99,8 @@
             // Verarbeiten der Cordova-Pause- und -Fortsetzenereignisse
             document.addEventListener('pause', onPause, false);
             document.addEventListener('resume', onResume, false);
+
+            onResume();
             
             window.setInterval(onTick, 1000);
         }
@@ -131,12 +133,22 @@
             }
         }
 
-        function onPause() {
-            // Diese Anwendung wurde ausgesetzt. Speichern Sie hier den Anwendungszustand.
+        function onPause()
+        {
+            if (last_message_text.length > 0)
+            {
+                window.localStorage.setItem("last_message_text", last_message_text);
+            }
         }
 
-        function onResume() {
-
+        function onResume()
+        {
+            var lst_msg_txt = window.localStorage.getItem("last_message_text") as string;
+            if (lst_msg_txt != undefined && lst_msg_txt.length > 0)
+            {
+                last_message_text = lst_msg_txt;
+                (document.getElementById('msg_text') as HTMLInputElement).value = lst_msg_txt;
+            }
         }
 
     }

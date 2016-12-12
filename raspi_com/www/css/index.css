@@ -83,7 +83,13 @@ h1 {
     font-weight: bold;*/
 }
 
-
+.msg_text {
+    font-size:16px;
+    padding:4px 4px;
+    background-color:rgba(0, 0, 0, 0);
+    border-width: 0;
+    text-align:center;
+}
 
 .event {
     border-radius:4px;
