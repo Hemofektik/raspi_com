@@ -38,9 +38,9 @@ var raspicom;
             var client = new XMLHttpRequest();
             //client.open("POST", "http://raspi.local:8888", true);
             client.open("POST", "http://localhost:8888", true);
-            client.setRequestHeader("Connection", "close");
+            //client.setRequestHeader("Connection", "close");
             client.setRequestHeader("Content-Type", "application/json");
-            client.setRequestHeader("Origin", "raspi_com");
+            //client.setRequestHeader("Origin", "raspi_com");
             client.onreadystatechange = function () {
                 if (client.readyState === client.DONE) {
                     if (client.status === 200) {
@@ -72,7 +72,7 @@ var raspicom;
             last_message_text = document.getElementById('msg_text').value;
             var duration = (last_time - new Date().getTime()) / 1000;
             var audible = (time == 0);
-            sendMessage({ text: last_message_text, duration: duration, audible: audible });
+            sendMessage({ "text": last_message_text, "duration": duration, "audible": audible });
         }
         Application.setTime = setTime;
         function stop() {

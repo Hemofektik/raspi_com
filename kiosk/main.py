@@ -50,16 +50,7 @@ class CallbackEventHandler(QObject):
 
 def set_monitor_on(state):
     pass
-    #if sys.platform.startswith('linux'):
-    #    import os
-    #    os.system("xset dpms force on" if state else "xset dpms force off")
-    #else:
-    #    import win32gui
-    #    import win32con#
-
-    #    SC_MONITORPOWER = 0xF170
-    #    win32gui.SendMessageTimeout(win32con.HWND_BROADCAST, win32con.WM_SYSCOMMAND, SC_MONITORPOWER, -1 if state else 2, 0, 100)
-    #    return
+    # TODO: implement output on PIN 17
 
 class pyGUI(htmlPy.Object):
     # GUI callable functions have to be inside this class.
@@ -104,7 +95,7 @@ class QTGuiHandler(CallbackEventHandler):
         self.timer_signal = None
 
     def _set_text_gui_thread(self, text, audible):
-        # TODO: enable screen back light
+        set_monitor_on(True)
         if audible:
             play_sound("mystic-flute.wav")
         app.evaluate_javascript("(function () {document.set_text('" + text + "');})()")
@@ -125,7 +116,7 @@ class QTGuiHandler(CallbackEventHandler):
 
     def _hide_gui_thread(self):
         app.evaluate_javascript("(function () {document.hide();})()")
-        # TODO: disable screen back light 
+        set_monitor_on(False) 
 
     def hide(self):
         self.postEventWithCallback(self._hide_gui_thread)
